@@ -17,7 +17,7 @@
                      (dissoc choices :terminate))))
 
 (defn grow-tree
-  [path center continue-for]
+  [origin path center continue-for]
   (letfn [(grow-branch
             ; Generates a series of branched paths
             ; Params:
@@ -25,17 +25,17 @@
             ;   continue-for : number, depth to disallow termination for
             ;   branches : path vector, accumulation of paths
             ; Return: vector, of paths.
-            [path continue-for branches]
+            [[x y] path continue-for branches]
             (let [can-terminate (= continue-for 0)
-                  continue-for (if (> continue-for 0) (- continue-for 1) 0)]
+                  continue-for (if (> continue-for 0) (- continue-for 1) 0)
+                  path (conj path :L [x y])]
               (case (make-choice can-terminate)
                 :terminate (conj branches path)
-                :branch (recur (conj path :l [unit unit])
-                               continue-for
-                               (grow-branch (conj path :l [(* unit -1) unit])
-                                            continue-for branches))
-                :extend (recur (conj path :l [0 unit]) continue-for branches))))]
-    (grow-branch path continue-for [])))
+                :branch (recur [(+ x unit) (+ y unit)] path continue-for
+                               (grow-branch [(- x unit) (+ y unit)]
+                                            path continue-for branches))
+                :extend (recur [x (+ y unit)] path continue-for branches))))]
+    (grow-branch origin path continue-for [])))
 
 (defn create-tree
   "Generates a branched tree SVG
@@ -46,7 +46,7 @@
   (let [center [200 0]
         origin [200 center-radius]]
     (into [:dali/page]
-          (grow-tree [:path attrs :M origin] center 15))))
+          (grow-tree origin [:path attrs :M origin] center 15))))
 
 (defn -main
   [& args]
