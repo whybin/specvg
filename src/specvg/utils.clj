@@ -1,6 +1,5 @@
 (ns specvg.utils
-  (:gen-class)
-  (:require [clojure.math.numeric-tower :refer [sqrt]]))
+  (:gen-class))
 
 ; Random Bias {{{
 (defn- pick-item
@@ -53,6 +52,6 @@
   Returns: float vector"
   [[o p] [x y] dist]
   (let [[v w] [(- x o) (- y p)]
-        k (/ dist (sqrt (+ (* v v) (* w w))))]
+        k (/ dist (Math/sqrt (+ (* v v) (* w w))))]
     [(float (+ x (* v k)))
      (float (+ y (* w k)))]))
