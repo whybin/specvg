@@ -1,8 +1,11 @@
 (ns specvg.core
   (:gen-class)
-  (:require [dali.io :as io]))
+  (:require [dali.io :as io]
+            [specvg
+             [utils :as utils]]))
 
 (def unit 10)
+(def choices {:terminate 1 :branch 3 :extend 4})
 
 (defn- make-choice
   "Params:
@@ -10,10 +13,8 @@
   Return: keyword, describing the action to take.
     Only returns :terminate if `can-terminate` is true"
   [can-terminate]
-  (let [choices [:branch :extend]]
-    (rand-nth (if can-terminate
-                (conj choices :terminate)
-                choices))))
+  (utils/rand-bias (if can-terminate choices
+                     (dissoc choices :terminate))))
 
 (defn grow-branch
   "Generates a series of branched paths

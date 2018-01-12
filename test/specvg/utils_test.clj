@@ -1,0 +1,30 @@
+(ns specvg.utils-test
+  (:require [clojure.test :refer :all]
+            [specvg.utils :refer :all]))
+
+(deftest pick-item-test
+  (testing "Will always pick a bias of 1"
+    (is (=
+         (#'specvg.utils/pick-item (list :will-be-picked) (list 1) 0.5)
+         :will-be-picked))
+    (is (=
+         (#'specvg.utils/pick-item (list :not :will-be-picked) (list 0 1) 0.5)
+         :will-be-picked)))
+  (testing "Will never pick a bias of 0"
+    (is (not (= (#'specvg.utils/pick-item (list :never-picked :a :b)
+                                         (list 0 0.5 0.5) 0.3)
+                :never-picked)))
+    (is (not (= (#'specvg.utils/pick-item (list :never-picked :a :b)
+                                         (list 0 0.5 0.5) 0.7)
+                :never-picked))))
+  (testing "Correctly picks based on float"
+    (is (#'specvg.utils/pick-item (list :z :a :b) (list 0.2 0.3 0.5) 0.1) :z)
+    (is (#'specvg.utils/pick-item (list :z :a :b) (list 0.2 0.3 0.5) 0.2) :a)
+    (is (#'specvg.utils/pick-item (list :z :a :b) (list 0.2 0.3 0.5) 0.3) :b)))
+
+(deftest normalize-bias-test
+  (testing "Translates list to values out of 1"
+    (is (= (#'specvg.utils/normalize-bias (list 1)) (list 1.0)))
+    (is (= (#'specvg.utils/normalize-bias (list 42)) (list 1.0)))
+    (is (= (#'specvg.utils/normalize-bias (list 1 2 3 4))
+           (list 0.1 0.2 0.3 0.4)))))
