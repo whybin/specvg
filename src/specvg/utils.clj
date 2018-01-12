@@ -1,6 +1,8 @@
 (ns specvg.utils
-  (:gen-class))
+  (:gen-class)
+  (:require [clojure.math.numeric-tower :refer [sqrt]]))
 
+; Random Bias {{{
 (defn- pick-item
   "Pick an item based on the given float by checking
   if the float is less than the bias
@@ -32,3 +34,25 @@
   Return: keyword"
   [coll]
   (pick-item (keys coll) (normalize-bias (vals coll)) (rand)))
+; }}}
+
+(defn slope
+  "Params:
+    [o p] : [number number]
+    [x y] : [number number]
+  Returns: ratio"
+  [[o p] [x y]]
+  (/ (- y p) (- x o)))
+
+(defn point-on-line
+  "Find endpoint (represented as 2-element vector) given two points.
+  Params:
+    [o p] : [number number]
+    [x y] : [number number]
+    dist : number, distance
+  Returns: float vector"
+  [[o p] [x y] dist]
+  (let [[v w] [(- x o) (- y p)]
+        k (/ dist (sqrt (+ (* v v) (* w w))))]
+    [(float (+ x (* v k)))
+     (float (+ y (* w k)))]))

@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [specvg.utils :refer :all]))
 
+; Random Bias {{{
 (deftest pick-item-test
   (testing "Will always pick a bias of 1"
     (is (=
@@ -28,3 +29,18 @@
     (is (= (#'specvg.utils/normalize-bias (list 42)) (list 1.0)))
     (is (= (#'specvg.utils/normalize-bias (list 1 2 3 4))
            (list 0.1 0.2 0.3 0.4)))))
+; }}}
+
+(deftest slope-test
+  (testing "Correctly computes slope"
+    (is (= (slope [0 0] [1 1]) 1))
+    (is (= (slope [2 1] [-1 5]) -4/3))))
+
+(deftest point-on-line-test
+  (testing "Correctly finds endpoint"
+    (is (= (point-on-line [0 0] [1 0] 10)
+           [11.0 0.0]))
+    (is (= (point-on-line [0 0] [0 1] 10)
+           [0.0 11.0]))
+    (is (= (point-on-line [0 0] [3 4] 10)
+           [9.0 12.0]))))
