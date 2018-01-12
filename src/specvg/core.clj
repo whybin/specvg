@@ -45,5 +45,5 @@
   [& args]
   (io/render-png (create-tree {:stroke :indigo
                                :stroke-width 4
-                               :fill :none}) "test.png")
+                               :fill :none}) "out/test.png")
   (println "done!"))

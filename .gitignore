@@ -13,4 +13,4 @@ pom.xml.asc
 .hgignore
 .hg/
 
-*.png
+out/
