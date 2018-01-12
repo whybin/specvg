@@ -5,7 +5,7 @@
              [utils :as utils]]))
 
 (def unit 10)
-(def choices {:terminate 1 :branch 3 :extend 4})
+(def choices {:terminate 4 :branch 3 :extend 5})
 
 (defn- make-choice
   "Params:
@@ -21,17 +21,18 @@
   Params:
     path : vector
     continue-for : number, depth to disallow termination for
+    branches : path vector, accumulation of paths
   Return: vector, of paths."
-  [path continue-for]
+  [path continue-for branches]
   (let [can-terminate (= continue-for 0)
         continue-for (if (> continue-for 0) (- continue-for 1) 0)]
     (case (make-choice can-terminate)
-      :terminate [path]
-      :branch (vec (concat
-                     (grow-branch (conj path :l [unit unit]) continue-for)
-                     (grow-branch
-                       (conj path :l [(* unit -1) unit]) continue-for)))
-      :extend (grow-branch (conj path :l [0 unit]) continue-for))))
+      :terminate (conj branches path)
+      :branch (recur (conj path :l [unit unit])
+                     continue-for
+                     (grow-branch (conj path :l [(* unit -1) unit])
+                                  continue-for branches))
+      :extend (recur (conj path :l [0 unit]) continue-for branches))))
 
 (defn create-tree
   "Generates a branched tree SVG
@@ -39,7 +40,7 @@
     attrs : map, SVG attributes
   Return: vector, a Dali document"
   [attrs]
-  (into [:dali/page] (grow-branch [:path attrs :M [500 0]] 3)))
+  (into [:dali/page] (grow-branch [:path attrs :M [200 0]] 15 [])))
 
 (defn -main
   [& args]
