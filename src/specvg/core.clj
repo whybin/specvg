@@ -4,8 +4,13 @@
             [specvg
              [utils :as utils]]))
 
+(def out-dir "out/")
 (def unit 10)
+(def center-radius 12)
 (def choices {:terminate 4 :branch 3 :extend 5})
+(def attrs {:stroke :paleturquoise
+            :stroke-width 1
+            :fill :none})
 
 (defn- make-choice
   "Params:
@@ -57,6 +62,7 @@
   "Generates a branched tree SVG
   Params:
     attrs : map, SVG attributes
+    center-radius : number, offset from center
   Return: vector, a Dali document"
   [attrs center-radius]
   (let [center [200 0]
@@ -64,9 +70,15 @@
     (into [:dali/page]
           (grow-tree origin [:path attrs :M origin] center 15))))
 
+(defn many-trees
+  [n]
+  (when (> n 0)
+    (io/render-svg (create-tree attrs center-radius)
+                   (str out-dir "tree" n ".svg"))
+    (println (str "Created tree #" n))
+    (many-trees (- n 1))))
+
 (defn -main
   [& args]
-  (io/render-png (create-tree {:stroke :indigo
-                               :stroke-width 4
-                               :fill :none} 12) "out/test.png")
+  (many-trees (read-string (first args)))
   (println "done!"))
