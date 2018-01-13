@@ -18,23 +18,39 @@
 
 (defn grow-tree
   [origin path center continue-for]
-  (letfn [(grow-branch
+  (letfn [(branch-point
+            ; Calculate the new point for a branch
+            ; Params:
+            ;   point : number vector
+            ;   direction : keyword, either :left or :right
+            ; Return: float vector
+            [point direction]
+            (let [rad (* (case direction :left -1 :right 1)
+                         (/ Math/PI 3))]
+              (utils/point-sum point
+                               (map (fn [value] (* unit value))
+                                    (utils/cartesian
+                                      (+ (utils/polar-coordinate center point)
+                                         rad))))))
+          (grow-branch
             ; Generates a series of branched paths
             ; Params:
+            ;   point : number vector
             ;   path : vector
             ;   continue-for : number, depth to disallow termination for
             ;   branches : path vector, accumulation of paths
             ; Return: vector, of paths.
-            [[x y] path continue-for branches]
+            [point path continue-for branches]
             (let [can-terminate (= continue-for 0)
                   continue-for (if (> continue-for 0) (- continue-for 1) 0)
-                  path (conj path :L [x y])]
+                  path (conj path :L point)]
               (case (make-choice can-terminate)
                 :terminate (conj branches path)
-                :branch (recur [(+ x unit) (+ y unit)] path continue-for
-                               (grow-branch [(- x unit) (+ y unit)]
+                :branch (recur (branch-point point :left) path continue-for
+                               (grow-branch (branch-point point :right)
                                             path continue-for branches))
-                :extend (recur [x (+ y unit)] path continue-for branches))))]
+                :extend (recur (utils/point-on-line center point unit)
+                               path continue-for branches))))]
     (grow-branch origin path continue-for [])))
 
 (defn create-tree
