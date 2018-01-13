@@ -43,6 +43,10 @@
   [[o p] [x y]]
   (/ (- y p) (- x o)))
 
+(defn point-sum
+  [[o p] [x y]]
+  [(+ o x) (+ p y)])
+
 (defn point-on-line
   "Find endpoint (represented as 2-element vector) given two points.
   Params:
@@ -55,3 +59,20 @@
         k (/ dist (Math/sqrt (+ (* v v) (* w w))))]
     [(float (+ x (* v k)))
      (float (+ y (* w k)))]))
+
+(defn polar-coordinate
+  "Converts cartesian to polar.
+  Params:
+    [o p] : [number number]
+    [x y] : [number number]
+  Return: float"
+  [[o p] [x y]]
+  (Math/atan2 (- y p) (- x o)))
+
+(defn cartesian
+  "Converts polar to cartesian.
+  Params:
+    rad : number
+  Return: float vector"
+  [rad]
+  [(Math/cos rad) (Math/sin rad)])

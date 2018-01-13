@@ -1,6 +1,7 @@
 (ns specvg.utils-test
   (:require [clojure.test :refer :all]
-            [specvg.utils :refer :all]))
+            [specvg.utils :refer :all]
+            [same :refer [ish?]]))
 
 ; Random Bias {{{
 (deftest pick-item-test
@@ -44,3 +45,19 @@
            [0.0 11.0]))
     (is (= (point-on-line [0 0] [3 4] 10)
            [9.0 12.0]))))
+
+(deftest polar-coordinate-test
+  (testing "Correctly computes polar coords"
+    (is (= (polar-coordinate [0 0] [1 0])
+           0.0))
+    (is (= (polar-coordinate [0 0] [0 1])
+           (/ Math/PI 2)))
+    (is (= (polar-coordinate [0 0] [0 -1])
+           (/ Math/PI -2)))))
+
+(deftest cartesian-test
+  (testing "Correctly computes cartesian coords"
+    (is (ish? (cartesian (* 2 Math/PI)) [1.0 0.0]))
+    (is (ish? (cartesian Math/PI) [-1.0 0.0]))
+    (is (ish? (cartesian (/ Math/PI 2)) [0.0 1.0]))
+    (is (ish? (cartesian (/ Math/PI -2)) [0.0 -1.0]))))
